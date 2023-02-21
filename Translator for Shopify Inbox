@@ -1,0 +1,89 @@
+// ==UserScript==
+// @name         Translator for Shopify Inbox
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Add Google Translate buttons to Shopify Inbox to translate messages
+// @author       Your Name
+// @match        https://inbox.shopify.com/*
+// @grant        GM_xmlhttpRequest
+// @author       zla5
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Function to translate text
+    var translate = function(sl, dl, txt, cb) {
+        GM_xmlhttpRequest({
+            method: "GET",
+            url: "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" + sl + "&tl=" + dl + "&dt=t&q=" + encodeURI(txt),
+            onload: function(response) {
+                // Replace the \n
+                var _r_text = response.responseText.replace(/\n/g, "");
+                var _r = JSON.parse(_r_text);
+                var translate_string = "";
+                for (var i = 0; i < _r[0].length; i++) {
+                    translate_string += _r[0][i][0];
+                }
+                cb(translate_string);
+            }
+        });
+    };
+
+    // Function to create and add the Translate button
+    var addButton = function(languageCode, languageName) {
+        // Find the toolbar element
+        var toolbar = document.querySelector(".css-175oi2r.r-1awozwy.r-1o3jrms.r-18u37iz");
+        if (!toolbar) {
+            console.log("Target element not found");
+            return;
+        }
+
+        // Create the Translate button
+        var button = document.createElement("button");
+        button.innerHTML = languageName;
+        button.style.marginLeft = "10px";
+        button.style.backgroundColor = "#f8f8f8";
+        button.style.border = "1px solid #ccc";
+        button.style.borderRadius = "4px";
+        button.style.padding = "4px 8px";
+        button.style.cursor = "pointer";
+
+        // Add a click event listener to the button
+        button.addEventListener("click", function() {
+            // Find the message content element
+            var messageContent = document.querySelector('textarea');
+            if (!messageContent) {
+                console.log("Target element not found");
+                return;
+            }
+
+            // Wait until the textarea element is loaded
+            var checkExist = setInterval(function() {
+                if (messageContent.value.trim() !== "") {
+                    clearInterval(checkExist);
+
+                    // Translate the message text
+                    translate("zh-CN", languageCode, messageContent.value.trim(), function(result) {
+                        // Replace the message content with the translated text
+                        messageContent.value = result;
+                    });
+                }
+            }, 100); // Check every 100ms
+        });
+
+        // Add the Translate button to the toolbar
+        toolbar.appendChild(button);
+    };
+
+    // Add the Translate buttons when the page is loaded
+    window.addEventListener("load", function() {
+        setTimeout(function() {
+            addButton("en", "EN");
+            addButton("es", "ES");
+            addButton("ar", "AR");
+            addButton("fr", "FR");
+            addButton("ru", "RU");
+        }, 5000); // Wait 5 seconds before executing the addButton function
+    });
+})();
