@@ -1,1 +1,1 @@
-# -Translator-for-Shopify-Inbox
+请在tampermonkey中使用这个js代码。
