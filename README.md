@@ -2,7 +2,7 @@
 <br>
 使用方法：<br>
 1. 请在浏览器上安装tampermonkey中使用这个js代码。<br>
-2. 默认源语言为中文，如果你要修改源语言请在这段代码中的"zh-CN"修改为你需要的语言代码如："en"<br>
+2. 默认本国语言为中文，如果你要修改源本国语言请在这段代码中的"zh-CN"修改为你需要的语言代码如："en"<br>
  translate("zh-CN", languageCode, messageContent.value.trim(), function(result) {<br>
 3. 在代码中你可以自行添加或删除需要的语言。<br>
             addButton("en", "EN");<br>
